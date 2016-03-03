@@ -15,4 +15,11 @@ class KMeansSpec extends FlatSpec with Matchers {
     assert(model.isInstanceOf[KMeansModel])
   }
 
+  "KMeans.predict" should "return a membership matrix" in {
+    val data = DenseMatrix.zeros[Double](3,3)
+    val model = KMeans(c=3, m=2).fit(data)
+    val memberships = model.predict(data)
+    assert(memberships.isInstanceOf[DenseMatrix[Double]])
+  }
+
 }
