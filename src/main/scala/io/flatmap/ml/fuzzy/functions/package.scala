@@ -1,4 +1,4 @@
-package io.flatmap.ml
+package io.flatmap.ml.fuzzy
 
 import breeze.linalg._
 import breeze.math._
@@ -6,7 +6,7 @@ import breeze.numerics._
 import breeze.linalg.DenseMatrix
 import breeze.linalg.functions.euclideanDistance
 
-package object fuzzy {
+package object functions {
 
   def distance(data: DenseMatrix[Double], centroids: DenseMatrix[Double]): DenseMatrix[Double] = {
     assert(data.cols == centroids.cols, message = "invalid dimensions for matrices (data.cols should equal to centroids.cols)")
@@ -14,12 +14,13 @@ package object fuzzy {
     for {
       point <- 0 to data.rows - 1
       centroid <- 0 to centroids.rows - 1
-    } yield {
-      val x = data(point, ::).inner
-      val v = centroids(centroid, ::).inner
-      d(point, centroid) = euclideanDistance(x, v)
-    }
+    } yield d(point, centroid) = euclideanDistance(data(point, ::).inner, centroids(centroid, ::).inner)
     d
   }
+
+  def initGaussian(n_samples: Int, n_features: Int): DenseMatrix[Double] =
+    DenseMatrix.rand(n_samples, n_features, breeze.stats.distributions.Gaussian(0, 1))
+
+  def norm(x: DenseMatrix[Double]): Double = breeze.linalg.norm(x.toDenseVector)
 
 }
