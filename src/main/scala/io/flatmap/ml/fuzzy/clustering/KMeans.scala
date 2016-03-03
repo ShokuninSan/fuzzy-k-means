@@ -1,7 +1,7 @@
-package io.flatmap.ml.fuzzy
+package io.flatmap.ml.fuzzy.clustering
 
-import breeze.linalg.{DenseMatrix}
-import functions._
+import breeze.linalg.DenseMatrix
+import io.flatmap.ml.fuzzy.functions._
 
 private[fuzzy] case class KMeansModel(centroids: DenseMatrix[Double]) {
 

@@ -1,7 +1,7 @@
-package io.flatmap.ml.fuzzy
+package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
-import org.scalatest.{Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers}
 
 class KMeansSpec extends FlatSpec with Matchers {
 
