@@ -13,7 +13,7 @@ private[fuzzy] case class KMeansModel(centroids: DenseMatrix[Double]) {
 
 }
 
-case class KMeans(c: Int, m: Int) {
+case class KMeans(c: Int, m: Int) extends KMeansKernel {
 
   def fit(data: DenseMatrix[Double], errorThreshold: Double =  0.005, maxIterations: Int = 1000): KMeansModel = {
     // step 1: c and m are already fixed. Initialize the partition matrix and r
@@ -24,7 +24,8 @@ case class KMeans(c: Int, m: Int) {
       val u2 = u.copy
 
       // step 2: calculate cluster centers (eq 10.30)
-      val um = pow(u2, m)
+      val um = pow(u, m).t
+      val v = calculateCentroids(data, um, m)
 
       // step 3: update partition matrix
 
