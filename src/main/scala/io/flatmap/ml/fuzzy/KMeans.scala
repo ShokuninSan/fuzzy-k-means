@@ -23,7 +23,8 @@ case class KMeans(c: Int, m: Int) {
     while (r < maxIterations) {
       val u2 = u.copy
 
-      // step 2: calculate cluster centers
+      // step 2: calculate cluster centers (eq 10.30)
+      val um = pow(u2, m)
 
       // step 3: update partition matrix
 

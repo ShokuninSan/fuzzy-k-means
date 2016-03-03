@@ -23,4 +23,7 @@ package object functions {
 
   def norm(x: DenseMatrix[Double]): Double = breeze.linalg.norm(x.toDenseVector)
 
+  def pow(x: DenseMatrix[Double], exp: Int): DenseMatrix[Double] =
+    breeze.numerics.pow(x.toDenseVector, exp).toDenseMatrix.reshape(x.rows, x.cols)
+
 }

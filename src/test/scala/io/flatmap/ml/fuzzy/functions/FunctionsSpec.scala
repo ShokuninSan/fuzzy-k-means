@@ -43,4 +43,16 @@ class FunctionsSpec extends FlatSpec with Matchers {
     assert(norm(x) == 15.968719422671311)
   }
 
+  "pow" should "power a breeze matrix" in {
+    val x = DenseMatrix(
+      (0.0, 2.0, 5.0, -1.0),
+      (2.0, 4.0, 9.0, 4.0),
+      (6.0, 6.0, 6.0, 0.0))
+    val res = DenseMatrix(
+      (0.0, 4.0, 25.0, 1.0),
+      (4.0, 16.0, 81.0, 16.0),
+      (36.0, 36.0, 36.0, 0.0))
+    assert(pow(x, 2) == res)
+  }
+
 }
