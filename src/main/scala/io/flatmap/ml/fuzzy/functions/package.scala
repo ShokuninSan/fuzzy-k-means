@@ -26,4 +26,9 @@ package object functions {
   def pow(x: DenseMatrix[Double], exp: Double): DenseMatrix[Double] =
     breeze.numerics.pow(x.toDenseVector, exp).toDenseMatrix.reshape(x.rows, x.cols)
 
+  def closeTo(a: DenseVector[Double], b: DenseVector[Double], relDiff: Double = 1e-2): Boolean = {
+    assert(a.length == b.length)
+    a.toArray zip b.toArray forall { ab => breeze.numerics.closeTo(ab._1, ab._2, relDiff) }
+  }
+
 }

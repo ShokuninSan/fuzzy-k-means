@@ -39,7 +39,6 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
       (0.2, 0.4, 0.9, 0.6)
     )
     val u = TestKernel.updateMemberships(c, uInit, d, 2)
-    println(u)
     assert(u.rows == d.rows)
     assert(u.cols == d.cols)
   }

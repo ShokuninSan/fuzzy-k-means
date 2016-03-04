@@ -1,6 +1,6 @@
 package io.flatmap.ml.fuzzy.functions
 
-import breeze.linalg.{eig, DenseMatrix}
+import breeze.linalg.{DenseVector, eig, DenseMatrix}
 import org.scalatest._
 
 class FunctionsSpec extends FlatSpec with Matchers {
@@ -53,6 +53,17 @@ class FunctionsSpec extends FlatSpec with Matchers {
       (4.0, 16.0, 81.0, 16.0),
       (36.0, 36.0, 36.0, 0.0))
     assert(pow(x, 2) == res)
+  }
+
+  "closeTo" should "evaluate correct closeness of vectors" in {
+    val a = DenseVector(4.95, 5.0)
+    val b = DenseVector(5.0, 5.0)
+
+    // with default 'relDiff' of 1e-2 a difference of 0.05 should work (0.049 < 0.005)
+    assert(closeTo(a, b, relDiff = 1e-2))
+
+    // with a 'relDiff' of 0.005 we fail because '0.049 < 0.005' does not hold
+    assertResult(false)(closeTo(a, b, relDiff = 1e-3))
   }
 
 }
