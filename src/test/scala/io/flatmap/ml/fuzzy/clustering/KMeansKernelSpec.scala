@@ -7,8 +7,8 @@ import io.flatmap.ml.fuzzy.functions.initGaussian
 class KMeansKernelSpec extends FlatSpec with Matchers {
 
   object TestKernel extends KMeansKernel {
-    val c = 2
-    val m = 2
+    val numClusters = 2
+    val fuzziness = 2
   }
 
   val data = DenseMatrix(
@@ -19,14 +19,14 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
 
   "calculateCentroids" should "return matrix with appropriate dimensions" in {
     val u = DenseMatrix.ones[Double](4, 1)
-    val v = TestKernel.calculateCentroids(data, u.t, 1)
+    val v = TestKernel.calculateCentroids(data, u.t)
     assert(v.cols == data.cols)
     assert(v.rows == u.cols)
   }
 
   "calculateCentroids" should "return calculate centers" in {
     val u = DenseMatrix.ones[Double](4, 1)
-    val v = TestKernel.calculateCentroids(data, u.t, 1)
+    val v = TestKernel.calculateCentroids(data, u.t)
     val expected = DenseMatrix(
       (2.0, 2.0)
     )
@@ -41,7 +41,7 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
       (0.8, 0.6, 0.1, 0.4),
       (0.2, 0.4, 0.9, 0.6)
     )
-    val u = TestKernel.updateMemberships(c, uInit, d, 2)
+    val u = TestKernel.updateMemberships(uInit, d)
     assert(u.rows == d.rows)
     assert(u.cols == d.cols)
   }

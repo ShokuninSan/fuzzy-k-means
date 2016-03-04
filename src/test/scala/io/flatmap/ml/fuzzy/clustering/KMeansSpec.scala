@@ -25,12 +25,12 @@ class KMeansSpec extends FlatSpec with Matchers {
   )
 
   "KMeans" should "instantiace a KMeans estimator" in {
-    assert(KMeans(c=3, m=2).isInstanceOf[KMeans])
+    assert(KMeans(numClusters=3, fuzziness=2).isInstanceOf[KMeans])
   }
 
   "KMeans.fit" should "return a KMeansModel" in {
     val data = DenseMatrix.zeros[Double](3,3)
-    val model = KMeans(c=3, m=2).fit(data)
+    val model = KMeans(numClusters=3, fuzziness=2).fit(data)
     assert(model.isInstanceOf[KMeansModel])
   }
 
@@ -40,7 +40,7 @@ class KMeansSpec extends FlatSpec with Matchers {
       (3.0, 3.0),
       (1.0, 3.0),
       (3.0, 1.0))
-    val model = KMeans(c=1, m=2).fit(data)
+    val model = KMeans(numClusters=1, fuzziness=2).fit(data)
     val expectedMemberships = DenseMatrix((1.0, 1.0, 1.0, 1.0))
     val expectedCentroids = DenseMatrix((2.0, 2.0))
     assert(model.u == expectedMemberships)
@@ -51,13 +51,13 @@ class KMeansSpec extends FlatSpec with Matchers {
     val data = DenseMatrix(
       (1.0, 1.0, 1.0),
       (3.0, 3.0, 3.0))
-    val model = KMeans(c=1, m=2).fit(data)
+    val model = KMeans(numClusters=1, fuzziness=2).fit(data)
     val expectedCentroids = DenseMatrix((2.0, 2.0, 2.0))
     assert(model.centroids == expectedCentroids)
   }
 
   "KMeans.fit" should "solve the butterfly classification problem" in {
-    val model = KMeans(c=2, m=2).fit(butterflyModel)
+    val model = KMeans(numClusters=2, fuzziness=2).fit(butterflyModel)
 
     // the central point is expected to have equal membership to both clusters
     val expectedMembership = DenseVector(0.5, 0.5)
@@ -80,13 +80,13 @@ class KMeansSpec extends FlatSpec with Matchers {
 
   "KMeans.predict" should "return a membership matrix" in {
     val data = DenseMatrix.zeros[Double](3,3)
-    val model = KMeans(c=3, m=2).fit(data)
+    val model = KMeans(numClusters=3, fuzziness=2).fit(data)
     val memberships = model.predict(data)
     assert(memberships.isInstanceOf[DenseMatrix[Double]])
   }
 
   "KMeans.predict" should "return correct membership values" in {
-    val model = KMeans(c=2, m=2).fit(butterflyModel)
+    val model = KMeans(numClusters=2, fuzziness=2).fit(butterflyModel)
     val newData = DenseMatrix(
       (7.0, 3.0)
     )
