@@ -17,7 +17,7 @@ case class KMeans(c: Int, m: Int) extends KMeansKernel {
 
   def fit(data: DenseMatrix[Double], errorThreshold: Double =  0.005, maxIterations: Int = 1000): KMeansModel = {
     // step 1: c and m are already fixed. Initialize the partition matrix and r
-    val u = initGaussian(c, data.cols)
+    var u = initGaussian(c, data.cols)
     var r = 0
 
     while (r < maxIterations) {
@@ -28,6 +28,8 @@ case class KMeans(c: Int, m: Int) extends KMeansKernel {
       val v = calculateCentroids(data, um, m)
 
       // step 3: update partition matrix
+      val d = distance(v, data)
+      u = updateMemberships(c, u2, d, m)
 
       // step 4: calculate the Frobenius norm of the two successive fuzzy partitions
       if (norm(u - u2) <= errorThreshold)
