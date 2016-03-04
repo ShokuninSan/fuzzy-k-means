@@ -10,9 +10,7 @@ trait KMeansKernel {
     */
   def calculateCentroids(data: DenseMatrix[Double], u: DenseMatrix[Double], m: Int): DenseMatrix[Double] = {
     val um = pow(u, m)
-    val num = (um * data)
-    val denom = (um * DenseMatrix.ones[Double](data.rows, data.cols))
-    num / denom
+    (um * data) / (um * DenseMatrix.ones[Double](data.rows, data.cols))
   }
 
   /**
