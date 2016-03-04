@@ -15,7 +15,7 @@ class KMeansSpec extends FlatSpec with Matchers {
     assert(model.isInstanceOf[KMeansModel])
   }
 
-  "KMeans.fit" should "return a KMeansModel with correct centroids and memeberships" in {
+  "KMeans.fit" should "return a KMeansModel with correct centroids and memberships" in {
     val data = DenseMatrix(
       (1.0, 1.0),
       (3.0, 3.0),
@@ -25,6 +25,15 @@ class KMeansSpec extends FlatSpec with Matchers {
     val expectedMemberships = DenseMatrix((1.0, 1.0, 1.0, 1.0))
     val expectedCentroids = DenseMatrix((2.0, 2.0))
     assert(model.u == expectedMemberships)
+    assert(model.centroids == expectedCentroids)
+  }
+
+  "KMeans.fit" should "return a KMeansModel with correct centroids" in {
+    val data = DenseMatrix(
+      (1.0, 1.0, 1.0),
+      (3.0, 3.0, 3.0))
+    val model = KMeans(c=1, m=2).fit(data)
+    val expectedCentroids = DenseMatrix((2.0, 2.0, 2.0))
     assert(model.centroids == expectedCentroids)
   }
 
