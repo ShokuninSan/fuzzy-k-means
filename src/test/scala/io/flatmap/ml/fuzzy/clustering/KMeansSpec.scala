@@ -6,6 +6,24 @@ import io.flatmap.ml.fuzzy.functions.closeTo
 
 class KMeansSpec extends FlatSpec with Matchers {
 
+  val butterflyModel = DenseMatrix(
+    (7.0, 5.0), // the central point
+    (6.0, 5.0),
+    (5.0, 4.0),
+    (5.0, 5.0),
+    (5.0, 6.0),
+    (4.0, 3.0),
+    (4.0, 5.0),
+    (4.0, 7.0),
+    (8.0, 5.0),
+    (9.0, 4.0),
+    (9.0, 5.0),
+    (9.0, 6.0),
+    (10.0, 3.0),
+    (10.0, 5.0),
+    (10.0, 7.0)
+  )
+
   "KMeans" should "instantiace a KMeans estimator" in {
     assert(KMeans(c=3, m=2).isInstanceOf[KMeans])
   }
@@ -39,25 +57,7 @@ class KMeansSpec extends FlatSpec with Matchers {
   }
 
   "KMeans.fit" should "solve the butterfly classification problem" in {
-    val data = DenseMatrix(
-      (7.0, 5.0), // the central point
-      (6.0, 5.0),
-      (5.0, 4.0),
-      (5.0, 5.0),
-      (5.0, 6.0),
-      (4.0, 3.0),
-      (4.0, 5.0),
-      (4.0, 7.0),
-      (8.0, 5.0),
-      (9.0, 4.0),
-      (9.0, 5.0),
-      (9.0, 6.0),
-      (10.0, 3.0),
-      (10.0, 5.0),
-      (10.0, 7.0)
-    )
-
-    val model = KMeans(c=2, m=2).fit(data)
+    val model = KMeans(c=2, m=2).fit(butterflyModel)
 
     // the central point is expected to have equal membership to both clusters
     val expectedMembership = DenseVector(0.5, 0.5)
@@ -83,6 +83,15 @@ class KMeansSpec extends FlatSpec with Matchers {
     val model = KMeans(c=3, m=2).fit(data)
     val memberships = model.predict(data)
     assert(memberships.isInstanceOf[DenseMatrix[Double]])
+  }
+
+  "KMeans.predict" should "return correct membership values" in {
+    val model = KMeans(c=2, m=2).fit(butterflyModel)
+    val newData = DenseMatrix(
+      (7.0, 3.0)
+    )
+    val memberships = model.predict(newData)
+    assert(closeTo(memberships(::, 0), DenseVector(0.5, 0.5), 1e-2))
   }
 
 }

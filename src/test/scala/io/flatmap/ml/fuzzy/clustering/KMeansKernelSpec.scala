@@ -6,7 +6,10 @@ import io.flatmap.ml.fuzzy.functions.initGaussian
 
 class KMeansKernelSpec extends FlatSpec with Matchers {
 
-  object TestKernel extends KMeansKernel
+  object TestKernel extends KMeansKernel {
+    val c = 2
+    val m = 2
+  }
 
   val data = DenseMatrix(
     (1.0, 1.0),
