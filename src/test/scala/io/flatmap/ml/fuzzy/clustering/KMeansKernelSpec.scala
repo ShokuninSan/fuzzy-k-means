@@ -30,7 +30,7 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
     assert(v == expected)
   }
 
-  "updateMemberships" should "return matrix with appropriate dimensions 2" in {
+  "updateMemberships" should "return matrix with appropriate dimensions" in {
     val c = 2
     val k = 3 // features
     val uInit = initGaussian(c, k)
@@ -40,8 +40,8 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
     )
     val u = TestKernel.updateMemberships(c, uInit, d, 2)
     println(u)
-    assert(u.rows == d.cols)
-    assert(u.cols == d.rows)
+    assert(u.rows == d.rows)
+    assert(u.cols == d.cols)
   }
 
 }
