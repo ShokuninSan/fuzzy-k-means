@@ -1,6 +1,6 @@
 name := """fuzzy-k-means"""
 
-organization := "flatmap.io"
+organization := "io.flatmap"
 
 version := "0.1.0"
 
