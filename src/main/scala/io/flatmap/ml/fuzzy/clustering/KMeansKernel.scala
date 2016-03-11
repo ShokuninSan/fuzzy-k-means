@@ -5,7 +5,7 @@ import io.flatmap.ml.fuzzy.functions._
 
 trait KMeansKernel {
 
-  val fuzziness: Int
+  val fuzziness: Double
   val numClusters: Int
 
   /**
@@ -22,12 +22,14 @@ trait KMeansKernel {
   def updateMemberships(u: DenseMatrix[Double], d: DenseMatrix[Double]): DenseMatrix[Double] = {
     val _u = pow(d, -2 / (fuzziness - 1))
     val ones = DenseMatrix.ones[Double](numClusters, 1)
-    _u / (ones * sum(_u, Axis._0).inner.toDenseMatrix)
+    fmax(_u /= (ones * sum(_u, Axis._0).inner.toDenseMatrix), eps)
   }
 
   def run(data: DenseMatrix[Double], centroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 1000): (DenseMatrix[Double], DenseMatrix[Double]) = {
     // step 1: c and m are already fixed. Initialize the partition matrix and r
-    var u = initGaussian(numClusters, data.rows) // classes x samples
+    val u0 = DenseMatrix.rand[Double](numClusters, data.rows) // classes x samples
+    var u: DenseMatrix[Double] = u0 / (DenseMatrix.ones[Double](numClusters, 1) * sum(u0, Axis._0).inner.toDenseMatrix)
+    u = fmax(u, eps)
     var r = 0
     var v = DenseMatrix.zeros[Double](1, numClusters)
 

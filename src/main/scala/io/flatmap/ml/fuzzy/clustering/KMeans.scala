@@ -2,7 +2,7 @@ package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
 
-private[fuzzy] case class KMeansModel(val numClusters: Int, val fuzziness: Int, centroids: DenseMatrix[Double], u: DenseMatrix[Double]) extends KMeansKernel {
+private[fuzzy] case class KMeansModel(val numClusters: Int, val fuzziness: Double, centroids: DenseMatrix[Double], u: DenseMatrix[Double]) extends KMeansKernel {
 
   def predict(data: DenseMatrix[Double], errorThreshold: Double =  0.005, maxIterations: Int = 1000): DenseMatrix[Double] =
     run(data, Some(centroids), errorThreshold, maxIterations) match {
@@ -11,7 +11,7 @@ private[fuzzy] case class KMeansModel(val numClusters: Int, val fuzziness: Int, 
 
 }
 
-case class KMeans(val numClusters: Int, val fuzziness: Int) extends KMeansKernel {
+case class KMeans(val numClusters: Int, val fuzziness: Double) extends KMeansKernel {
 
   def fit(data: DenseMatrix[Double], errorThreshold: Double =  0.005, maxIterations: Int = 1000): KMeansModel =
     run(data, errorThreshold = errorThreshold, maxIterations = maxIterations) match {

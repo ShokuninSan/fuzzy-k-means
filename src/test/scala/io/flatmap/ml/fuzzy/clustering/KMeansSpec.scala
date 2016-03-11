@@ -86,7 +86,7 @@ class KMeansSpec extends FlatSpec with Matchers {
   }
 
   "KMeans.predict" should "return correct membership values" in {
-    val model = KMeans(numClusters=2, fuzziness=2).fit(butterflyModel)
+    val model = KMeans(numClusters=2, fuzziness=2.1).fit(butterflyModel)
     val newData = DenseMatrix(
       (7.0, 3.0)
     )

@@ -8,7 +8,7 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
 
   object TestKernel extends KMeansKernel {
     val numClusters = 2
-    val fuzziness = 2
+    val fuzziness = 2.5
   }
 
   val data = DenseMatrix(
