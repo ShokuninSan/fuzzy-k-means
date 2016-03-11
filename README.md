@@ -4,7 +4,7 @@
 Make sure you have [Docker installed](https://docs.docker.com/engine/installation/) on your machine.
 
 ## Run examples
-Start the Docker container with `docker run -i -t -p 0.0.0.0:8888:8888 -v $(pwd):/home/pylab shokuninsan/fuzzylab`. On success you get a shell within the container (you will notice that your command prompt has changed, e.g. `root@cc85df33e59c:/#`).
+Start the Docker container with `docker run -i -t -p 0.0.0.0:8888:8888 -v $(pwd):/home/pylab shokuninsan/fuzzylab:0.1.0`. On success you get a shell within the container (you will notice that your command prompt has changed, e.g. `root@cc85df33e59c:/#`).
 
 Within the docker environment change into the mounted volume `cd home/pylab/`
 
