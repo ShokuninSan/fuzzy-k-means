@@ -11,7 +11,7 @@ Within the docker container change into the mounted volume `cd home/pylab/`.
 
 From there you can run the IPython notebook: `ipython notebook --ip=0.0.0.0 --port=8888`.
 
-To work with the notebook you need to access the webserver via your browser on your host system. To obtain the appropriate IP address of your container on Mac OS X, you need to execute `docker-machine ip default`. Now you can navigate your browser to `<your-ip>:8888/tree/examples/visualization` and select `iris.ipynb`.
+To work with the notebook you need to access the webserver via your browser on your host system. To obtain the appropriate IP address of your container on Mac OS X, you need to execute `docker-machine ip default`. Now you can navigate your browser to `<your-ip>:8888/tree/examples/visualization`, select `iris.ipynb` and in the menu bar click _Cell_ > _Run All_.
 
 If you want to trigger some knobs on `KMeans` (e.g. change `fuzziness` or `numClusters` parameters), just open the `iris.amm` script within the IPython notebook in your browser, change it as you desire and re-run the related cells in `iris.ipynb`.
 
