@@ -25,13 +25,19 @@ trait KMeansKernel {
     fmax(_u /= (ones * sum(_u, Axis._0).inner.toDenseMatrix), eps)
   }
 
+  def initPartitionMatrix(rows: Int, cols: Int): DenseMatrix[Double] = {
+    val u0 = DenseMatrix.rand[Double](rows, cols) // classes x samples
+    val u: DenseMatrix[Double] = u0 / (DenseMatrix.ones[Double](rows, 1) * sum(u0, Axis._0).inner.toDenseMatrix)
+    fmax(u, eps)
+  }
+
+  def initClusterCentroids(numClusters: Int): DenseMatrix[Double] = DenseMatrix.zeros[Double](1, numClusters)
+
   def run(data: DenseMatrix[Double], centroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 1000): (DenseMatrix[Double], DenseMatrix[Double]) = {
-    // step 1: c and m are already fixed. Initialize the partition matrix and r
-    val u0 = DenseMatrix.rand[Double](numClusters, data.rows) // classes x samples
-    var u: DenseMatrix[Double] = u0 / (DenseMatrix.ones[Double](numClusters, 1) * sum(u0, Axis._0).inner.toDenseMatrix)
-    u = fmax(u, eps)
+    // step 1: initialize the partition matrix and r
+    var u = initPartitionMatrix(numClusters, data.rows)
+    var v = initClusterCentroids(numClusters)
     var r = 0
-    var v = DenseMatrix.zeros[Double](1, numClusters)
 
     while (r < maxIterations) {
       val u2 = u.copy
