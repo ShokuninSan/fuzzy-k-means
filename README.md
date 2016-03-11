@@ -10,7 +10,7 @@ Within the docker environment change into the mounted volume `cd home/pylab/`
 
 From there you can run the IPython notebook: `ipython notebook --ip=0.0.0.0 --port=8888`.
 
-To run and edit the notebook you need to access the webserver via your brwoser on port 8888. TO obtain the appropriate IP address of your container on Mac OS X, you need to execute `docker-machine ip default`. Now you can navigate your browser to <ip>:8000.
+To run and edit the notebook you need to access the webserver via your brwoser on port 8888. TO obtain the appropriate IP address of your container on Mac OS X, you need to execute `docker-machine ip default`. Now you can navigate your browser to `<your-ip>:8888`.
 
 Note: you can reconnect to a running docker container like this
 
