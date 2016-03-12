@@ -7,3 +7,7 @@
 .idea/
 .ipynb_checkpoints/
 examples/visualization/iris_predictions.csv
+*.pyc
+/examples/visualization/build
+/examples/visualization/dist
+*.egg-info

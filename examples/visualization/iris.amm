@@ -12,7 +12,7 @@ import java.io.File
 
 // load the Iris dataset and train the model
 val iris = Iris.load
-val model = KMeans(numClusters = 3, fuzziness = 575.0).fit(iris.data)
+val model = KMeans(numClusters = 3, fuzziness = 650.0).fit(iris.data)
 
 val soft = model.u.t
 val hard = breeze.linalg.argmax(model.u(::, *)).inner.mapValues(_.toDouble).toDenseMatrix.t
