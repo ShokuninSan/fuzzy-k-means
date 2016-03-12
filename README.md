@@ -2,7 +2,6 @@
 
 This is a Fuzzy-k-Means implementation according to [Ross T. (2010), Fuzzy Logic with Engineering Applications, p.152-153](http://www.amazon.de/Fuzzy-Logic-Engineering-Applications-Timothy/dp/047074376X) written in Scala with a `scikit-learn`-like API.
 
-## Examples
 To run the examples I recommend to use the Docker image `shokuninsan/fuzzylab` that I have prepared just for you. So make sure you have [Docker installed](https://docs.docker.com/engine/installation/) on your machine.
 
 Run a Docker container from within the root of this project with `docker run -i -t -p 0.0.0.0:8888:8888 -v $(pwd):/home/pylab shokuninsan/fuzzylab:0.1.0`. On success you get a shell within the container (you will notice that your command prompt has changed, e.g. `root@cc85df33e59c:/#`).
