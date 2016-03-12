@@ -34,7 +34,7 @@ RUN curl -L -o amm https://git.io/vafIQ && chmod +x amm && mv amm /usr/local/bin
 
 # Publish fuzzy-k-means into local .ivy2 repo
 RUN apt-get update && apt-get install -y git
-RUN git clone --branch 0.1.0-SNAPSHOT https://github.com/ShokuninSan/fuzzy-k-means.git
+RUN git clone https://github.com/ShokuninSan/fuzzy-k-means.git
 RUN cd fuzzy-k-means && sbt publishLocal
 
 # Install plotting module for visualization
