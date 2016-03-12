@@ -42,12 +42,11 @@ trait KMeansKernel {
     while (r < maxIterations) {
       val u2 = u.copy
 
-      // step 2: calculate cluster centers (eq 10.30)
+      // step 2: calculate cluster centers (eq 10.30); prediction uses centroids given as parameter
       v = centroids getOrElse calculateCentroids(data, u)
 
       // step 3: update partition matrix
-      val d = distance(v, data)
-      u = updateMemberships(u, d)
+      u = updateMemberships(u, distance(v, data))
 
       // step 4: calculate the Frobenius norm of the two successive fuzzy partitions
       if (norm(u - u2) <= errorThreshold)
