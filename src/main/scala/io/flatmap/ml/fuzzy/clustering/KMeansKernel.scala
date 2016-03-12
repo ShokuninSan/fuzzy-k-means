@@ -33,7 +33,7 @@ trait KMeansKernel {
 
   def initClusterCentroids(numClusters: Int): DenseMatrix[Double] = DenseMatrix.zeros[Double](1, numClusters)
 
-  def run(data: DenseMatrix[Double], centroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 1000): (DenseMatrix[Double], DenseMatrix[Double]) = {
+  def run(data: DenseMatrix[Double], centroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000): (DenseMatrix[Double], DenseMatrix[Double]) = {
     // step 1: initialize the partition matrix and r
     var u = initPartitionMatrix(numClusters, data.rows)
     var v = initClusterCentroids(numClusters)
