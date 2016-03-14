@@ -1,61 +1,119 @@
 package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.{Axis, sum, DenseMatrix}
+import breeze.stats.distributions.Rand
 import io.flatmap.ml.fuzzy.functions._
 
 trait KMeansKernel {
 
   val fuzziness: Double
   val numClusters: Int
+  val epsilon: Double
 
   /**
-    * Ross T. (2010), Fuzzy Logic with Engineering Applications, p. 352, eq. 10.30
+    * Calculate cluster centroids
+    *
+    * This is an implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 352, equation (10.30)
+    *
+    * @param data Matrix of samples of shape (#datapoints x #features)
+    * @param memberships Matrix of membership degrees of data points to clusters of shape (#centroids x #datapoints)
+    * @return Matrix of shape #clusters x #features
     */
-  def calculateCentroids(data: DenseMatrix[Double], u: DenseMatrix[Double]): DenseMatrix[Double] = {
-    val um = pow(u, fuzziness)
-    (um * data) / (um * DenseMatrix.ones[Double](data.rows, data.cols))
+  def calculateCentroids(data: DenseMatrix[Double], memberships: DenseMatrix[Double]): DenseMatrix[Double] = {
+    val _u = pow(memberships, fuzziness)
+    val ones = unitMatrix(data.rows, data.cols)
+    (_u * data) / (_u * ones)
   }
 
   /**
-    * Ross T. (2010), Fuzzy Logic with Engineering Applications, p. 353, eq. 10.32a
+    * Calculate cluster membership of data points
+    *
+    * This is an implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353, equation (10.32a)
+    *
+    * @param distances Matrix of distances between centroids and data points of shape (#datapoints x #centroids)
+    * @return Matrix of calculated membership degrees of shape (#clusters x #datapoints)
     */
-  def updateMemberships(u: DenseMatrix[Double], d: DenseMatrix[Double]): DenseMatrix[Double] = {
-    val _u = pow(d, -2 / (fuzziness - 1))
-    val ones = DenseMatrix.ones[Double](numClusters, 1)
-    fmax(_u /= (ones * sum(_u, Axis._0).inner.toDenseMatrix), eps)
+  def calculateMemberships(distances: DenseMatrix[Double]): DenseMatrix[Double] = {
+    val _u = pow(distances, -2 / (fuzziness - 1))
+    normalize(_u)
   }
 
-  def initPartitionMatrix(rows: Int, cols: Int): DenseMatrix[Double] = {
-    val u0 = DenseMatrix.rand[Double](rows, cols) // classes x samples
-    val u: DenseMatrix[Double] = u0 / (DenseMatrix.ones[Double](rows, 1) * sum(u0, Axis._0).inner.toDenseMatrix)
-    fmax(u, eps)
+  /**
+    * Initialize membership matrix
+    *
+    * This method randomly initializes a numSamples x numClusters matrix with uniformly distributed values which are normalized.
+    *
+    * @param numSamples # of datapoints (samples)
+    * @param numClusters # of centroids or clusters
+    * @return Matrix of membership degrees of data points to clusters of shape (#datapoints x #clusters)
+    */
+  def initMembershipMatrix(numSamples: Int, numClusters: Int): DenseMatrix[Double] = {
+    val _u = DenseMatrix.rand[Double](numSamples, numClusters, rand = Rand.uniform)
+    normalize(_u)
   }
 
+  /**
+    * Normalizes the values of a matrix
+    *
+    * This method normalizes each value over the sum of the respective column. Before the matrix is returned, NaN (Not a Number) values are
+    * substituted with epsilon.
+    *
+    * @param m Matrix (e.g. memberships or distances)
+    * @return Normalized matrix
+    */
+  def normalize(m: DenseMatrix[Double]): DenseMatrix[Double] = {
+    val ones: DenseMatrix[Double] = unitMatrix(m.rows, 1)
+    val sumByColumns: DenseMatrix[Double] = sum(m, Axis._0).inner.toDenseMatrix // shape (1 x #columns)
+    val normalized: DenseMatrix[Double] = m / (ones * sumByColumns) // '/' calculates element-wise, i.e. (#rows x #cols) / (#rows x #cols)
+    fmax(normalized, epsilon) // substitute NaNs by epsilon
+  }
+
+  /**
+    * Initialize cluster centroids
+    *
+    * @param numClusters
+    * @return Matrix of shape 1 x numClusters
+    */
   def initClusterCentroids(numClusters: Int): DenseMatrix[Double] = DenseMatrix.zeros[Double](1, numClusters)
 
-  def run(data: DenseMatrix[Double], centroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000): (DenseMatrix[Double], DenseMatrix[Double]) = {
+  /**
+    * Run the Fuzzy-k-Means algorithm
+    *
+    * This method runs the Fuzzy-k-Means algorithm according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 352-353,
+    * which is a so-called iterative optimization algorithm (Ross, 2010, p.352).
+    *
+    * Ross only outlined the training of a Fuzzy-k-Means estimator. However, this implementation is generic in the sense that when
+    * clusterCentroids are passed to this method, the same implementation can also be used for prediction of new (unseen) data points.
+    *
+    * @param data Input data to be clustered
+    * @param clusterCentroids Used for prediction where clusters are fixed
+    * @param errorThreshold The prescribed level of accuracy
+    * @param maxIterations Maximum number of iteration to run
+    * @return Tuple with calculated centroids and memberships
+    */
+  def run(data: DenseMatrix[Double], clusterCentroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000): (DenseMatrix[Double], DenseMatrix[Double]) = {
     // step 1: initialize the partition matrix and r
-    var u = initPartitionMatrix(numClusters, data.rows)
-    var v = initClusterCentroids(numClusters)
-    var r = 0
+    var memberships = initMembershipMatrix(numClusters, data.rows)
+    var centroids = initClusterCentroids(numClusters)
+    var iteration = 0
 
-    while (r < maxIterations) {
-      val u2 = u.copy
+    while (iteration < maxIterations) {
+      val previousMemberships = memberships.copy
 
       // step 2: calculate cluster centers (eq 10.30); prediction uses centroids given as parameter
-      v = centroids getOrElse calculateCentroids(data, u)
+      centroids = clusterCentroids getOrElse calculateCentroids(data, memberships)
 
-      // step 3: update partition matrix
-      u = updateMemberships(u, distance(v, data))
+      // step 3: calculate partition matrix (equation 10.32a)
+      memberships = calculateMemberships(distance(centroids, data))
 
-      // step 4: calculate the Frobenius norm of the two successive fuzzy partitions
-      if (norm(u - u2) <= errorThreshold)
-        r = maxIterations
+      // step 4: calculate the norm of the two successive fuzzy partitions
+      if (norm(memberships - previousMemberships) <= errorThreshold)
+        iteration = maxIterations
       else
-        r += 1
+        iteration += 1
     }
 
-    (v, u)
+    (centroids, memberships)
   }
 
 }

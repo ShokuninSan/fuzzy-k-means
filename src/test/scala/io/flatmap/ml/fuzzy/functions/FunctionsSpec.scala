@@ -27,14 +27,6 @@ class FunctionsSpec extends FlatSpec with Matchers {
     intercept[java.lang.AssertionError] { distance(a, b) }
   }
 
-  "initGaussian" should "create a breeze matrix of random normal values" in {
-    val rows = 5
-    val cols = 3
-    val m = initGaussian(n_samples = rows, n_features = cols)
-    assert(m.rows == rows)
-    assert(m.cols == cols)
-  }
-
   "norm" should "create Frobenius norm of a matrix" in {
     val x = DenseMatrix(
       (0.0, 2.0, 5.0, -1.0),
@@ -60,10 +52,10 @@ class FunctionsSpec extends FlatSpec with Matchers {
     val b = DenseVector(5.0, 5.0)
 
     // with default 'relDiff' of 1e-2 a difference of 0.05 should work (0.049 < 0.005)
-    assert(closeTo(a, b, relDiff = 1e-2))
+    assert(closeTo(a, b, epsilon = 1e-2))
 
     // with a 'relDiff' of 0.005 we fail because '0.049 < 0.005' does not hold
-    assertResult(false)(closeTo(a, b, relDiff = 1e-3))
+    assertResult(false)(closeTo(a, b, epsilon = 1e-3))
   }
 
 }
