@@ -76,7 +76,7 @@ trait KMeansKernel {
     * @param numClusters
     * @return Matrix of shape 1 x numClusters
     */
-  def initClusterCentroids(numClusters: Int): DenseMatrix[Double] = DenseMatrix.zeros[Double](1, numClusters)
+  def initClusterCentroids(numClusters: Int, numFeatures: Int): DenseMatrix[Double] = DenseMatrix.zeros[Double](numClusters, numFeatures)
 
   /**
     * Run the Fuzzy-k-Means algorithm
@@ -96,7 +96,7 @@ trait KMeansKernel {
   def run(data: DenseMatrix[Double], clusterCentroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000): (DenseMatrix[Double], DenseMatrix[Double]) = {
     // step 1: initialization
     var memberships = initMembershipMatrix(numClusters, data.rows)
-    var centroids = initClusterCentroids(numClusters)
+    var centroids = initClusterCentroids(numClusters, data.cols)
     var iteration = 0
 
     while (iteration < maxIterations) {
