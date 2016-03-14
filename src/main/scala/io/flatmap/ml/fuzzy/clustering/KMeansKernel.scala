@@ -13,7 +13,8 @@ trait KMeansKernel {
   /**
     * Calculate cluster centroids
     *
-    * This is an implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 352, equation (10.30)
+    * This is a vectorized implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 352,
+    * equation (10.30)
     *
     * @param data Matrix of samples of shape (#datapoints x #features)
     * @param memberships Matrix of membership degrees of data points to clusters of shape (#centroids x #datapoints)
@@ -28,7 +29,8 @@ trait KMeansKernel {
   /**
     * Calculate cluster membership of data points
     *
-    * This is an implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353, equation (10.32a)
+    * This is a vectorized implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353,
+    * equation (10.32a)
     *
     * @param distances Matrix of distances between centroids and data points of shape (#datapoints x #centroids)
     * @return Matrix of calculated membership degrees of shape (#clusters x #datapoints)
