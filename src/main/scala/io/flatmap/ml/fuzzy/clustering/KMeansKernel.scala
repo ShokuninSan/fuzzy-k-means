@@ -94,7 +94,7 @@ trait KMeansKernel {
     * @return Tuple with calculated centroids and memberships
     */
   def run(data: DenseMatrix[Double], clusterCentroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000): (DenseMatrix[Double], DenseMatrix[Double]) = {
-    // step 1: initialize the partition matrix and r
+    // step 1: initialization
     var memberships = initMembershipMatrix(numClusters, data.rows)
     var centroids = initClusterCentroids(numClusters)
     var iteration = 0
@@ -105,7 +105,7 @@ trait KMeansKernel {
       // step 2: calculate cluster centers (eq 10.30); prediction uses centroids given as parameter
       centroids = clusterCentroids getOrElse calculateCentroids(data, memberships)
 
-      // step 3: calculate partition matrix (equation 10.32a)
+      // step 3: calculate memberhsip matrix (equation 10.32a)
       memberships = calculateMemberships(distance(centroids, data))
 
       // step 4: calculate the norm of the two successive fuzzy partitions
