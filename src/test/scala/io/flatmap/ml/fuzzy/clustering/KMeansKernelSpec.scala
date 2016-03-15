@@ -75,9 +75,9 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
     val n = 3
     val m = 5
     val ones = unitMatrix(rows = n, cols = 1)
-    val sums = DenseMatrix.create(rows = 1, cols = m, Array.tabulate[Double](m)(i => (i + 1) * 2))
+    val values = DenseMatrix.create(rows = 1, cols = m, Array.tabulate[Double](m)(i => (i + 1) * 2))
 
-    val product = ones * sums
+    val product = ones * values
 
     val expected = DenseMatrix(
       (2.0, 4.0, 6.0, 8.0, 10.0),
