@@ -36,7 +36,7 @@ trait KMeansKernel {
     * @return Matrix of calculated membership degrees of shape (#clusters x #datapoints)
     */
   def calculateMemberships(distances: DenseMatrix[Double]): DenseMatrix[Double] = {
-    val _u = pow(distances, -2 / (fuzziness - 1))
+    val _u = pow(pow(distances, 2 / (fuzziness - 1)), -1)
     normalize(_u)
   }
 
