@@ -85,6 +85,6 @@ package object functions {
     * @param cols
     * @return Matrix of all ones
     */
-  def unitMatrix(rows: Int, cols: Int): DenseMatrix[Double] = DenseMatrix.ones[Double](rows, cols)
+  def allOnesMatrix(rows: Int, cols: Int): DenseMatrix[Double] = DenseMatrix.ones[Double](rows, cols)
 
 }

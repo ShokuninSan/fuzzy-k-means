@@ -74,7 +74,7 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
   "product of a unit matrix of shape (n x 1) and a sum matrix of shape (1 x m)" should "produce a (n x m) matrix with n copies of the sums" in {
     val n = 3
     val m = 5
-    val ones = unitMatrix(rows = n, cols = 1)
+    val ones = allOnesMatrix(rows = n, cols = 1)
     val values = DenseMatrix.create(rows = 1, cols = m, Array.tabulate[Double](m)(i => (i + 1) * 2))
 
     val product = ones * values

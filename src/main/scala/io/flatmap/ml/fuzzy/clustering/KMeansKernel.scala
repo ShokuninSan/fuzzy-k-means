@@ -22,7 +22,7 @@ trait KMeansKernel {
     */
   def calculateCentroids(data: DenseMatrix[Double], memberships: DenseMatrix[Double]): DenseMatrix[Double] = {
     val _u = pow(memberships, fuzziness)
-    val ones = unitMatrix(data.rows, data.cols)
+    val ones = allOnesMatrix(data.rows, data.cols)
     (_u * data) / (_u * ones)
   }
 
@@ -64,7 +64,7 @@ trait KMeansKernel {
     * @return Normalized matrix
     */
   def normalize(m: DenseMatrix[Double]): DenseMatrix[Double] = {
-    val ones: DenseMatrix[Double] = unitMatrix(m.rows, 1)
+    val ones: DenseMatrix[Double] = allOnesMatrix(m.rows, 1)
     val sumByColumns: DenseMatrix[Double] = sum(m, Axis._0).inner.toDenseMatrix // shape (1 x #columns)
     val normalized: DenseMatrix[Double] = m / (ones * sumByColumns) // '/' calculates element-wise, i.e. (#rows x #cols) / (#rows x #cols)
     fmax(normalized, epsilon) // substitute NaNs by epsilon
