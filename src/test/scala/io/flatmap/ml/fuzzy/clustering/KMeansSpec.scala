@@ -78,6 +78,27 @@ class KMeansSpec extends FlatSpec with Matchers {
 
   }
 
+  "KMeans.fit" should "solve the butterfly classification problem with large spatial distances" in {
+    val model = KMeans(numClusters=2, fuzziness=2).fit(butterflyModel.mapValues(v => v * 1000))
+
+    // the central point is expected to have equal membership to both clusters
+    val expectedMembership = DenseVector(0.5, 0.5)
+    val membership = model.u(::, 0)
+
+    val expectedCentroid0 = DenseVector(4850.0, 5000.0)
+    val centroid0 = model.centroids(0,::).inner
+
+    val expectedCentroid1 = DenseVector(9140.0, 5000.0)
+    val centroid1 = model.centroids(1, ::).inner
+
+    assert(closeTo(membership, expectedMembership))
+
+    assert(
+      (closeTo(centroid0, expectedCentroid0) && closeTo(centroid1, expectedCentroid1)) ||
+        (closeTo(centroid0, expectedCentroid1) && closeTo(centroid1, expectedCentroid0))
+    )
+  }
+
   "KMeans.predict" should "return a membership matrix" in {
     val data = DenseMatrix.zeros[Double](3,3)
     val model = KMeans(numClusters=3, fuzziness=2).fit(data)
