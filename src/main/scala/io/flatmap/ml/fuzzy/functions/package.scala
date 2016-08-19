@@ -1,12 +1,10 @@
 package io.flatmap.ml.fuzzy
 
-import breeze.linalg._
-import breeze.math._
-import breeze.numerics._
-import breeze.linalg.DenseMatrix
+import breeze.linalg.{DenseMatrix, _}
 import breeze.linalg.functions.euclideanDistance
-import breeze.stats.distributions.RandBasis
-import com.github.fommil.netlib.LAPACK.{getInstance=>lapack}
+import com.github.fommil.netlib.LAPACK.{getInstance => lapack}
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
 
 package object functions {
 
@@ -35,7 +33,7 @@ package object functions {
   }
 
   /**
-    * Calculate the Frobenius norm of a matrix
+    * Calculate the Frobenius norm of a DenseMatrix
     *
     * @param x Matrix
     * @return Double
@@ -43,13 +41,37 @@ package object functions {
   def norm(x: DenseMatrix[Double]): Double = breeze.linalg.norm(x.toDenseVector)
 
   /**
-    * Calculate the power of a matrix
+    * Calculate the Frobenius norm of a RowMatrix
+    *
+    * See also [[https://en.wikipedia.org/wiki/Matrix_norm#Frobenius_norm]].
+    *
+    * @param x Matrix
+    * @return Double
+    */
+  def norm(x: RowMatrix): Double =
+    math.sqrt(x.rows.map(v => v.toArray.map(x => math.pow(math.abs(x), 2)).reduce(_+_)).reduce(_+_))
+
+  /**
+    * Calculate the power of a DenseMatrix
     *
     * @param x Matrix
     * @param exp The exponent
     * @return Matrix
     */
   def pow(x: DenseMatrix[Double], exp: Double): DenseMatrix[Double] = breeze.numerics.pow(x.toDenseVector, exp).toDenseMatrix.reshape(x.rows, x.cols)
+
+  /**
+    * Calculate the power of a RowMatrix
+    *
+    * @param matrix Matrix
+    * @param exp The exponent
+    * @return Matrix
+    */
+  def pow(matrix: RowMatrix, exp: Double): RowMatrix =
+    new RowMatrix(
+      matrix.rows.map(v => Vectors.dense(v.toArray.map(x => math.pow(math.abs(x), exp)))),
+      matrix.numRows,
+      matrix.numCols.toInt)
 
   /**
     * Calculate if two given matrices are close

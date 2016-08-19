@@ -1,9 +1,14 @@
 package io.flatmap.ml.fuzzy.functions
 
-import breeze.linalg.{DenseVector, eig, DenseMatrix}
+import breeze.linalg.{DenseMatrix, DenseVector, eig}
+import io.flatmap.ml.test.util.TestSparkContext
 import org.scalatest._
+import org.apache.spark.ml.linalg.{DenseMatrix => SparkDenseMatrix}
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.rdd.RDD
 
-class FunctionsSpec extends FlatSpec with Matchers {
+class FunctionsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext {
 
   "distance" should "calculate euclidean distance between two matrices" in {
     val X = DenseMatrix(
@@ -35,6 +40,15 @@ class FunctionsSpec extends FlatSpec with Matchers {
     assert(norm(x) == 15.968719422671311)
   }
 
+  "norm" should "create Frobenius norm of a Spark matrix" in {
+    val rdd = sc.makeRDD(Seq(
+      Vectors.dense(Array(0.0, 2.0, 5.0, -1.0)),
+      Vectors.dense(Array(2.0, 4.0, 9.0, 4.0)),
+      Vectors.dense(Array(6.0, 6.0, 6.0, 0.0))))
+    val x = new RowMatrix(rdd, 3L, 4)
+    assert(norm(x) == 15.968719422671311)
+  }
+
   "pow" should "power a breeze matrix" in {
     val x = DenseMatrix(
       (0.0, 2.0, 5.0, -1.0),
@@ -45,6 +59,30 @@ class FunctionsSpec extends FlatSpec with Matchers {
       (4.0, 16.0, 81.0, 16.0),
       (36.0, 36.0, 36.0, 0.0))
     assert(pow(x, 2) == res)
+  }
+
+  "pow" should "power a Spark matrix" in {
+    // given
+    val testRDD = sc.makeRDD(Seq(
+      Vectors.dense(Array(0.0, 2.0, 5.0, -1.0)),
+      Vectors.dense(Array(2.0, 4.0, 9.0, 4.0)),
+      Vectors.dense(Array(6.0, 6.0, 6.0, 0.0))))
+    val x = new RowMatrix(testRDD, 3L, 4)
+
+    val expectedRDD = sc.makeRDD(Seq(
+      Vectors.dense(Array(0.0, 4.0, 25.0, 1.0)),
+      Vectors.dense(Array(4.0, 16.0, 81.0, 16.0)),
+      Vectors.dense(Array(36.0, 36.0, 36.0, 0.0))))
+    val expectedResult = new RowMatrix(expectedRDD, 3L, 4)
+
+    // when
+    val result = pow(x, 2)
+
+    // then
+    val expectedVector = expectedResult.rows.collect().flatMap(_.toArray).toSeq
+    val resultVector = result.rows.collect().flatMap(_.toArray).toSeq
+
+    assert(resultVector == expectedVector)
   }
 
   "closeTo" should "evaluate correct closeness of vectors" in {
