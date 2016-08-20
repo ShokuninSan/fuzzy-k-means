@@ -26,6 +26,30 @@ class FunctionsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with 
     assert(distance(X, centroids) == dist)
   }
 
+  "distance" should "calculate euclidean distance between two RowMatrices" in {
+    val X = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(0.0, 2.0, 5.0, -1.0)),
+      Vectors.dense(Array(2.0, 4.0, 9.0, 4.0)),
+      Vectors.dense(Array(6.0, 6.0, 6.0, 0.0)))),
+      3L,
+      4)
+    val centroids = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(1.0, 3.0, 7.5, 1.0)),
+      Vectors.dense(Array(5.0, 5.5, 6.0, 0.0)))),
+      2L,
+      4)
+    val dist = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(3.5, 6.264982043070834)),
+      Vectors.dense(Array(3.640054944640259, 6.020797289396148)),
+      Vectors.dense(Array(6.103277807866851, 1.118033988749895)))),
+      3L,
+      2)
+    val expectedVector = dist.rows.collect().flatMap(_.toArray).toSeq
+    val resultVector = distance(X, centroids).rows.collect().flatMap(_.toArray).toSeq
+
+    assert(resultVector == expectedVector)
+  }
+
   "distance" should "throw an error on invalid matrix dimensions" in {
     val a = DenseMatrix.zeros[Double](2, 3)
     val b = DenseMatrix.zeros[Double](3, 2)

@@ -1,9 +1,10 @@
 package io.flatmap.ml.fuzzy
 
-import breeze.linalg.{DenseMatrix, _}
+import breeze.linalg.{DenseMatrix, DenseVector}
 import breeze.linalg.functions.euclideanDistance
 import com.github.fommil.netlib.LAPACK.{getInstance => lapack}
 import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 
 package object functions {
@@ -30,6 +31,34 @@ package object functions {
       centroid <- 0 to centroids.rows - 1
     } yield d(point, centroid) = euclideanDistance(data(point, ::).inner, centroids(centroid, ::).inner)
     d
+  }
+
+  /**
+    * Calculate the Euclidean distance between two Vectors.
+    *
+    * See also: [[https://en.wikipedia.org/wiki/Euclidean_distance#definition]].clone(): AnyRef = super.clone()
+    *
+    * @param a
+    * @param b
+    * @return distance
+    */
+  def distance(a: Vector, b: Vector): Double =
+    math.sqrt(a.toArray.zip(b.toArray).map(v => v._1 - v._2).map(x => x * x).sum)
+
+  /**
+    * Calculate the distance between data points and cluster centroids
+    *
+    * @param data
+    * @param centroids
+    * @return Matrix of shape (#datapoints x #centroids)
+    */
+  def distance(data: RowMatrix, centroids: RowMatrix): RowMatrix = {
+    assert(data.numCols() == centroids.numCols(), message = "invalid dimensions for matrices (data.cols should equal to centroids.cols)")
+    val c = centroids.rows.collect()
+    new RowMatrix(
+      data.rows.map(d => Vectors.dense(c.map(c => distance(d, c)))),
+      data.numRows(),
+      centroids.numRows().toInt)
   }
 
   /**
