@@ -1,12 +1,11 @@
 package io.flatmap.ml.fuzzy.functions
 
-import breeze.linalg.{DenseMatrix, DenseVector, eig}
+import breeze.linalg.{DenseMatrix, DenseVector}
 import io.flatmap.ml.test.util.TestSparkContext
-import org.scalatest._
 import org.apache.spark.ml.linalg.{DenseMatrix => SparkDenseMatrix}
-import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.linalg.Vectors
-import org.apache.spark.rdd.RDD
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.scalatest._
 
 class FunctionsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext {
 
@@ -118,6 +117,33 @@ class FunctionsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with 
 
     // with a 'relDiff' of 0.005 we fail because '0.049 < 0.005' does not hold
     assertResult(false)(closeTo(a, b, epsilon = 1e-3))
+  }
+
+  "dot" should "return calculate dot products using Spark API" in {
+    // each row represents a column of A
+    val aCols = sc.makeRDD(Seq(
+      DenseVector(1.0, 4.0),
+      DenseVector(2.0, 5.0),
+      DenseVector(3.0, 6.0),
+      DenseVector(7.0, 10.0),
+      DenseVector(8.0, 11.0),
+      DenseVector(9.0, 12.0)
+    ))
+    // bRows represents rows of B
+    val bRows = sc.makeRDD(Seq(
+      DenseVector(1.0, 2.0),
+      DenseVector(3.0, 4.0),
+      DenseVector(5.0, 6.0),
+      DenseVector(7.0, 8.0),
+      DenseVector(9.0, 10.0),
+      DenseVector(11.0, 12.0)
+    ))
+    val result = dot(aCols, bRows)
+    val expected = DenseMatrix(
+      (242.0, 272.0),
+      (350.0, 398.0)
+    )
+    assert(result == expected)
   }
 
 }

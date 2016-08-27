@@ -4,9 +4,12 @@ import breeze.linalg.DenseMatrix
 import io.flatmap.ml.fuzzy.clustering.kernels.FuzzyKMeansKernel
 import io.flatmap.ml.fuzzy.functions._
 import io.flatmap.ml.normalization._
-import org.scalatest.{FlatSpec, Matchers}
+import io.flatmap.ml.test.util.TestSparkContext
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
 
-class KMeansKernelSpec extends FlatSpec with Matchers {
+class KMeansKernelSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext  {
 
   val numClusters = 2
   val fuzziness = 2.5
@@ -32,6 +35,29 @@ class KMeansKernelSpec extends FlatSpec with Matchers {
       (2.0, 2.0)
     )
     assert(v == expected)
+  }
+
+  "calculateCentroids" should "return calculated centers using Spark API" in {
+    // data matrix of shape (#points x #features)
+    val data = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(1.0, 1.0)),
+      Vectors.dense(Array(3.0, 3.0)),
+      Vectors.dense(Array(1.0, 3.0)),
+      Vectors.dense(Array(3.0, 1.0))
+    )))
+    // membership matrix of shape (#points x #centroids)
+    val memberships = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(1.0)),
+      Vectors.dense(Array(1.0)),
+      Vectors.dense(Array(1.0)),
+      Vectors.dense(Array(1.0))
+    )))
+    // centroid matrix of shape (#centroids x #features)
+    val result = FuzzyKMeansKernel.calculateCentroids(data, memberships, fuzziness)
+    val expected = DenseMatrix(
+      (2.0, 2.0)
+    )
+    assert(result == expected)
   }
 
   "calculateMemberships" should "return matrix with appropriate dimensions" in {

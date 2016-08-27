@@ -18,3 +18,5 @@ libraryDependencies ++= Seq(
 )
 
 assemblySettings
+
+parallelExecution in Test := false

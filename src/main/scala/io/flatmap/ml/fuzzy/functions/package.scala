@@ -6,6 +6,7 @@ import com.github.fommil.netlib.LAPACK.{getInstance => lapack}
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.apache.spark.rdd.RDD
 
 package object functions {
 
@@ -137,5 +138,24 @@ package object functions {
     * @return Matrix of all ones
     */
   def allOnesMatrix(rows: Int, cols: Int): DenseMatrix[Double] = DenseMatrix.ones[Double](rows, cols)
+
+  /**
+    * A scalable dot product implementation
+    *
+    * @see https://www.bigdatapartnership.com/2015/11/23/scalable-matrix-multiplication-using-spark-2
+    *
+    * @param aCols A RowMatrix where each row represents columns of matrix A
+    * @param bRows A RowMatrix where each row represents rows of matrix B
+    * @return dot product of (large) matrices A and B
+    */
+  def dot(aCols: RDD[DenseVector[Double]], bRows: RDD[DenseVector[Double]]): DenseMatrix[Double] =
+    aCols.zip(bRows).map {
+      case (a, b) =>
+        val partialMatrix: DenseMatrix[Double] = DenseMatrix.zeros(a.size, b.size)
+        for (i <- 0 to a.size - 1) {
+          partialMatrix(i, ::) := b.t :* a(i)
+        }
+        partialMatrix
+    }.reduce(_ + _)
 
 }
