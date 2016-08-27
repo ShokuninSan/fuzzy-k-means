@@ -1,7 +1,7 @@
 package io.flatmap.ml
 
 import breeze.linalg.{Axis, DenseMatrix, sum}
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 
 package object normalization {
 

@@ -2,7 +2,7 @@ package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.{DenseVector, DenseMatrix}
 import org.scalatest.{FlatSpec, Matchers}
-import io.flatmap.ml.fuzzy.functions.closeTo
+import io.flatmap.ml.fuzzy.numerics.closeTo
 
 class KMeansSpec extends FlatSpec with Matchers {
 

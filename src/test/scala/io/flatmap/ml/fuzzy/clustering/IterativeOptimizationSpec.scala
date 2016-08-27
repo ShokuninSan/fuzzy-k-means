@@ -1,7 +1,7 @@
 package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 import org.scalatest.{FlatSpec, Matchers}
 
 class IterativeOptimizationSpec extends FlatSpec with Matchers {

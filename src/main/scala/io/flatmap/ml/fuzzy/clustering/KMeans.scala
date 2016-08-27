@@ -2,7 +2,7 @@ package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
 import io.flatmap.ml.fuzzy.clustering.kernels.KMeansKernel
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 
 private[fuzzy] case class KMeansModel(val numClusters: Int, val fuzziness: Double, val epsilon: Double, centroids: DenseMatrix[Double], u: DenseMatrix[Double]) extends IterativeOptimization {
 

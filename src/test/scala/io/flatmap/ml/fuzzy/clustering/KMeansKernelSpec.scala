@@ -2,7 +2,7 @@ package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
 import io.flatmap.ml.fuzzy.clustering.kernels.FuzzyKMeansKernel
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 import io.flatmap.ml.normalization._
 import io.flatmap.ml.test.util.TestSparkContext
 import org.apache.spark.mllib.linalg.Vectors

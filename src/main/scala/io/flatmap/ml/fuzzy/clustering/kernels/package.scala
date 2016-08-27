@@ -1,7 +1,7 @@
 package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg._
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 import io.flatmap.ml.normalization.Normalizer
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.distributed.RowMatrix

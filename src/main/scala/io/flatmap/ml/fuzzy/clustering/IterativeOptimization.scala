@@ -3,7 +3,7 @@ package io.flatmap.ml.fuzzy.clustering
 import breeze.linalg.DenseMatrix
 import breeze.stats.distributions.Rand
 import io.flatmap.ml.fuzzy.clustering.kernels.KMeansKernel
-import io.flatmap.ml.fuzzy.functions._
+import io.flatmap.ml.fuzzy.numerics._
 import io.flatmap.ml.normalization.MeanNormalizer
 
 trait IterativeOptimization {

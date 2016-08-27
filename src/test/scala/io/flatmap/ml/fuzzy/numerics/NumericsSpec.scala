@@ -1,4 +1,4 @@
-package io.flatmap.ml.fuzzy.functions
+package io.flatmap.ml.fuzzy.numerics
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 import io.flatmap.ml.test.util.TestSparkContext
@@ -7,7 +7,7 @@ import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.scalatest._
 
-class FunctionsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext {
+class NumericsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext {
 
   "distance" should "calculate euclidean distance between two matrices" in {
     val X = DenseMatrix(
