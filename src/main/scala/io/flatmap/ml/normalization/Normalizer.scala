@@ -1,10 +1,9 @@
 package io.flatmap.ml.normalization
 
-import breeze.linalg.{Axis, DenseMatrix, sum}
 import io.flatmap.ml.fuzzy.numerics._
 
-trait Normalizer {
+trait Normalizer[T] {
 
-  def normalize(m: DenseMatrix[Double], epsilon: Double = eps): DenseMatrix[Double]
+  def normalize(m: T, epsilon: Double = eps): T
 
 }

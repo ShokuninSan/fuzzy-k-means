@@ -1,7 +1,7 @@
 package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.{DenseMatrix, DenseVector}
-import io.flatmap.ml.fuzzy.clustering.kernels.{FuzzyKMeansKernel, KMeansKernel}
+import io.flatmap.ml.fuzzy.clustering.kernels.{BreezeKMeansKernel, KMeansKernel}
 import io.flatmap.ml.fuzzy.numerics._
 import io.flatmap.ml.normalization.Normalizer
 import org.scalatest.{FlatSpec, Matchers}
@@ -26,12 +26,12 @@ class FlawedKernelSpec extends FlatSpec with Matchers {
     (10.0, 7.0)
   )
 
-  object FlawedKMeansKernel extends KMeansKernel {
+  object FlawedKMeansKernel extends KMeansKernel[DenseMatrix[Double], DenseMatrix[Double], Normalizer[DenseMatrix[Double]]] {
 
     def calculateCentroids(data: DenseMatrix[Double], memberships: DenseMatrix[Double], fuzziness: Double): DenseMatrix[Double] =
-      FuzzyKMeansKernel.calculateCentroids(data, memberships, fuzziness)
+      BreezeKMeansKernel.calculateCentroids(data, memberships, fuzziness)
 
-    def calculateMemberships(distances: DenseMatrix[Double], fuzziness: Double)(implicit normalizer: Normalizer): DenseMatrix[Double] = {
+    def calculateMemberships(distances: DenseMatrix[Double], fuzziness: Double)(implicit normalizer: Normalizer[DenseMatrix[Double]]): DenseMatrix[Double] = {
 
       // THIS IS WRONG
       val _u = pow(distances, -2 / (fuzziness - 1))

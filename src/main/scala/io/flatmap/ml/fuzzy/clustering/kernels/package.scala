@@ -8,7 +8,7 @@ import org.apache.spark.mllib.linalg.distributed.RowMatrix
 
 package object kernels {
 
-  implicit object FuzzyKMeansKernel extends KMeansKernel {
+  implicit object BreezeKMeansKernel extends KMeansKernel[DenseMatrix[Double], DenseMatrix[Double], Normalizer[DenseMatrix[Double]]] {
 
     /**
       * Calculate cluster centroids
@@ -25,6 +25,24 @@ package object kernels {
       val ones = allOnesMatrix(data.rows, data.cols)
       (_u * data) / (_u * ones)
     }
+
+    /**
+      * Calculate cluster membership of data points
+      *
+      * This is a vectorized implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353,
+      * equation (10.32a)
+      *
+      * @param distances Matrix of distances between centroids and data points of shape (#datapoints x #centroids)
+      * @return Matrix of calculated membership degrees of shape (#clusters x #datapoints)
+      */
+    def calculateMemberships(distances: DenseMatrix[Double], fuzziness: Double)(implicit normalizer: Normalizer[DenseMatrix[Double]]): DenseMatrix[Double] = {
+      val _u = pow(pow(distances, 2 / (fuzziness - 1)), -1)
+      normalizer.normalize(_u)
+    }
+
+  }
+
+  implicit object SparkKMeansKernel extends KMeansKernel[RowMatrix, DenseMatrix[Double], Normalizer[RowMatrix]] {
 
     /**
       * Calculate cluster centroids
@@ -45,16 +63,7 @@ package object kernels {
       dotProduct(::, *).map(_ :/ margin)
     }
 
-    /**
-      * Calculate cluster membership of data points
-      *
-      * This is a vectorized implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353,
-      * equation (10.32a)
-      *
-      * @param distances Matrix of distances between centroids and data points of shape (#datapoints x #centroids)
-      * @return Matrix of calculated membership degrees of shape (#clusters x #datapoints)
-      */
-    def calculateMemberships(distances: DenseMatrix[Double], fuzziness: Double)(implicit normalizer: Normalizer): DenseMatrix[Double] = {
+    def calculateMemberships(distances: RowMatrix, fuzziness: Double)(implicit normalizer: Normalizer[RowMatrix]): RowMatrix = {
       val _u = pow(pow(distances, 2 / (fuzziness - 1)), -1)
       normalizer.normalize(_u)
     }

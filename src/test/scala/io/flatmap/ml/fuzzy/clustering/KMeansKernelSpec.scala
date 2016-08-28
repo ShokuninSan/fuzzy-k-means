@@ -1,12 +1,12 @@
 package io.flatmap.ml.fuzzy.clustering
 
 import breeze.linalg.DenseMatrix
-import io.flatmap.ml.fuzzy.clustering.kernels.FuzzyKMeansKernel
+import io.flatmap.ml.fuzzy.clustering.kernels.{BreezeKMeansKernel, SparkKMeansKernel}
 import io.flatmap.ml.fuzzy.numerics._
 import io.flatmap.ml.normalization._
 import io.flatmap.ml.test.util.TestSparkContext
-import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.apache.spark.mllib.linalg.{DenseVector, Vectors}
 import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
 
 class KMeansKernelSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext  {
@@ -21,23 +21,23 @@ class KMeansKernelSpec extends FlatSpec with Matchers with BeforeAndAfterEach wi
     (1.0, 3.0),
     (3.0, 1.0))
 
-  "calculateCentroids" should "return matrix with appropriate dimensions" in {
+  "BreezeKMeansKernel.calculateCentroids" should "return matrix with appropriate dimensions" in {
     val u = DenseMatrix.ones[Double](4, 1)
-    val v = FuzzyKMeansKernel.calculateCentroids(data, u.t, fuzziness)
+    val v = BreezeKMeansKernel.calculateCentroids(data, u.t, fuzziness)
     assert(v.cols == data.cols)
     assert(v.rows == u.cols)
   }
 
-  "calculateCentroids" should "return calculate centers" in {
+  "BreezeKMeansKernel.calculateCentroids" should "return calculate centers" in {
     val u = DenseMatrix.ones[Double](4, 1)
-    val v = FuzzyKMeansKernel.calculateCentroids(data, u.t, fuzziness)
+    val v = BreezeKMeansKernel.calculateCentroids(data, u.t, fuzziness)
     val expected = DenseMatrix(
       (2.0, 2.0)
     )
     assert(v == expected)
   }
 
-  "calculateCentroids" should "return calculated centers using Spark API" in {
+  "SparkKMeansKernel.calculateCentroids" should "return calculated centers" in {
     // data matrix of shape (#points x #features)
     val data = new RowMatrix(sc.makeRDD(Seq(
       Vectors.dense(Array(1.0, 1.0)),
@@ -53,23 +53,33 @@ class KMeansKernelSpec extends FlatSpec with Matchers with BeforeAndAfterEach wi
       Vectors.dense(Array(1.0))
     )))
     // centroid matrix of shape (#centroids x #features)
-    val result = FuzzyKMeansKernel.calculateCentroids(data, memberships, fuzziness)
+    val result = SparkKMeansKernel.calculateCentroids(data, memberships, fuzziness)
     val expected = DenseMatrix(
       (2.0, 2.0)
     )
     assert(result == expected)
   }
 
-  "calculateMemberships" should "return matrix with appropriate dimensions" in {
+  "BreezeKMeansKernel.calculateMemberships" should "return matrix with appropriate dimensions" in {
     val c = 2
     val k = 3 // features
     val d = DenseMatrix(
       (0.8, 0.6, 0.1, 0.4),
       (0.2, 0.4, 0.9, 0.6)
     )
-    val u = FuzzyKMeansKernel.calculateMemberships(d, fuzziness)
+    val u = BreezeKMeansKernel.calculateMemberships(d, fuzziness)
     assert(u.rows == d.rows)
     assert(u.cols == d.cols)
+  }
+
+  "SparkKMeansKernel.calculateMemberships" should "return matrix with appropriate dimensions" in {
+    val d = new RowMatrix(sc.makeRDD(Seq(
+      new DenseVector(Array(0.8, 0.6, 0.1, 0.4)),
+      new DenseVector(Array(0.2, 0.4, 0.9, 0.6))
+    )), 2,4)
+    val u = SparkKMeansKernel.calculateMemberships(d, fuzziness)
+    assert(u.numRows() == d.numRows())
+    assert(u.numCols() == d.numCols())
   }
 
 }

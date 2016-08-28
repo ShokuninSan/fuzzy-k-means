@@ -4,7 +4,7 @@ import breeze.linalg.DenseMatrix
 import breeze.stats.distributions.Rand
 import io.flatmap.ml.fuzzy.clustering.kernels.KMeansKernel
 import io.flatmap.ml.fuzzy.numerics._
-import io.flatmap.ml.normalization.MeanNormalizer
+import io.flatmap.ml.normalization.{DenseMatrixMeanNormalizer, Normalizer}
 
 trait IterativeOptimization {
 
@@ -21,7 +21,7 @@ trait IterativeOptimization {
     */
   def initMembershipMatrix(numSamples: Int, numClusters: Int): DenseMatrix[Double] = {
     val _u = DenseMatrix.rand[Double](numSamples, numClusters, rand = Rand.uniform)
-    MeanNormalizer.normalize(_u)
+    DenseMatrixMeanNormalizer.normalize(_u)
   }
 
   /**
@@ -47,7 +47,7 @@ trait IterativeOptimization {
     * @param maxIterations Maximum number of iteration to run
     * @return Tuple with calculated centroids and memberships
     */
-  def run(data: DenseMatrix[Double], clusterCentroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000, fuzziness: Double = 2.0)(implicit kernel: KMeansKernel): (DenseMatrix[Double], DenseMatrix[Double]) = {
+  def run(data: DenseMatrix[Double], clusterCentroids: Option[DenseMatrix[Double]] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000, fuzziness: Double = 2.0)(implicit kernel: KMeansKernel[DenseMatrix[Double], DenseMatrix[Double], Normalizer[DenseMatrix[Double]]]): (DenseMatrix[Double], DenseMatrix[Double]) = {
     // step 1: initialization
     var memberships = initMembershipMatrix(numClusters, data.rows)
     var centroids = initClusterCentroids(numClusters, data.cols)
