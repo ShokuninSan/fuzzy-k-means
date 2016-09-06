@@ -1,10 +1,13 @@
 package io.flatmap.ml.fuzzy.clustering
 
-import breeze.linalg.{DenseVector, DenseMatrix}
-import org.scalatest.{FlatSpec, Matchers}
+import breeze.linalg.{DenseMatrix, DenseVector}
 import io.flatmap.ml.fuzzy.numerics.closeTo
+import io.flatmap.ml.test.util.TestSparkContext
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
+import org.scalatest.{BeforeAndAfterEach, FlatSpec, Matchers}
 
-class KMeansSpec extends FlatSpec with Matchers {
+class KMeansSpec extends FlatSpec with Matchers with BeforeAndAfterEach with TestSparkContext {
 
   val butterflyModel = DenseMatrix(
     (7.0, 5.0), // the central point
@@ -34,6 +37,12 @@ class KMeansSpec extends FlatSpec with Matchers {
     assert(model.isInstanceOf[KMeansModel])
   }
 
+  "SparkKMeans.fit" should "return a SparkKMeansModel" in {
+    val data = new RowMatrix(sc.makeRDD(Seq.fill(3)(3)).map(Vectors.zeros), 3, 3)
+    val model = SparkKMeans(numClusters=3, fuzziness=2).fit(data)
+    assert(model.isInstanceOf[SparkKMeansModel])
+  }
+
   "KMeans.fit" should "return a KMeansModel with correct centroids and memberships" in {
     val data = DenseMatrix(
       (1.0, 1.0),
@@ -43,6 +52,19 @@ class KMeansSpec extends FlatSpec with Matchers {
     val model = KMeans(numClusters=1, fuzziness=2).fit(data)
     val expectedMemberships = DenseMatrix((1.0, 1.0, 1.0, 1.0))
     val expectedCentroids = DenseMatrix((2.0, 2.0))
+    assert(model.u == expectedMemberships)
+    assert(model.centroids == expectedCentroids)
+  }
+
+  "SparkKMeans.fit" should "return a SparkKMeansModel with correct centroids and memberships" in {
+    val data = new RowMatrix(sc.makeRDD(Seq(
+      Vectors.dense(Array(1.0, 1.0)),
+      Vectors.dense(Array(3.0, 3.0)),
+      Vectors.dense(Array(1.0, 3.0)),
+      Vectors.dense(Array(3.0, 1.0)))))
+    val model = SparkKMeans(numClusters=1, fuzziness=2).fit(data)
+    val expectedMemberships = new RowMatrix(sc.makeRDD(Seq(Vectors.dense(Array(1.0, 1.0, 1.0, 1.0)))), 1L, 4)
+    val expectedCentroids = new org.apache.spark.mllib.linalg.DenseMatrix(1, 2, Array(2.0, 2.0))
     assert(model.u == expectedMemberships)
     assert(model.centroids == expectedCentroids)
   }

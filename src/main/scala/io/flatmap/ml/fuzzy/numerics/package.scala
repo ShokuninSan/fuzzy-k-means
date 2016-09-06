@@ -53,13 +53,13 @@ package object numerics {
     * @param centroids
     * @return Matrix of shape (#datapoints x #centroids)
     */
-  def distance(data: RowMatrix, centroids: RowMatrix): RowMatrix = {
-    assert(data.numCols() == centroids.numCols(), message = "invalid dimensions for matrices (data.cols should equal to centroids.cols)")
-    val c = centroids.rows.collect()
+  def distance(data: RowMatrix, centroids: org.apache.spark.mllib.linalg.DenseMatrix): RowMatrix = {
+    assert(data.numCols() == centroids.numCols, message = "invalid dimensions for matrices (data.cols should equal to centroids.cols)")
+    val c = centroids.rowIter.toArray
     new RowMatrix(
       data.rows.map(d => Vectors.dense(c.map(c => distance(d, c)))),
       data.numRows(),
-      centroids.numRows().toInt)
+      centroids.numRows)
   }
 
   /**
@@ -157,5 +157,16 @@ package object numerics {
         }
         partialMatrix
     }.reduce(_ + _)
+
+  def sub(a: RowMatrix, b: RowMatrix): RowMatrix = {
+    assert(a.numRows() == b.numRows() && a.numCols() == b.numCols(), "Matrices A and B must be of equal shape")
+    val result = a.rows.zip(b.rows).map {
+      case (a, b) =>
+        val _a = new DenseVector(a.toArray)
+        val _b = new DenseVector(b.toArray)
+        Vectors.dense((_a - _b).toArray)
+    }
+    new RowMatrix(result, a.numRows(), a.numCols().toInt)
+  }
 
 }

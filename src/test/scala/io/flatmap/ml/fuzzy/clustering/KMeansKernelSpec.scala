@@ -54,9 +54,7 @@ class KMeansKernelSpec extends FlatSpec with Matchers with BeforeAndAfterEach wi
     )))
     // centroid matrix of shape (#centroids x #features)
     val result = SparkKMeansKernel.calculateCentroids(data, memberships, fuzziness)
-    val expected = DenseMatrix(
-      (2.0, 2.0)
-    )
+    val expected = new org.apache.spark.mllib.linalg.DenseMatrix(1, 2, Array(2.0, 2.0))
     assert(result == expected)
   }
 

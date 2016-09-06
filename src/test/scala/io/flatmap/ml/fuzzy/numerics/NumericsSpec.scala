@@ -3,7 +3,7 @@ package io.flatmap.ml.fuzzy.numerics
 import breeze.linalg.{DenseMatrix, DenseVector}
 import io.flatmap.ml.test.util.TestSparkContext
 import org.apache.spark.ml.linalg.{DenseMatrix => SparkDenseMatrix}
-import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.linalg.{Matrices, Vectors}
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.scalatest._
 
@@ -32,11 +32,7 @@ class NumericsSpec extends FlatSpec with Matchers with BeforeAndAfterEach with T
       Vectors.dense(Array(6.0, 6.0, 6.0, 0.0)))),
       3L,
       4)
-    val centroids = new RowMatrix(sc.makeRDD(Seq(
-      Vectors.dense(Array(1.0, 3.0, 7.5, 1.0)),
-      Vectors.dense(Array(5.0, 5.5, 6.0, 0.0)))),
-      2L,
-      4)
+    val centroids = new org.apache.spark.mllib.linalg.DenseMatrix(2, 4, Array(1.0, 5.0, 3.0, 5.5, 7.5, 6.0, 1.0, 0.0))
     val dist = new RowMatrix(sc.makeRDD(Seq(
       Vectors.dense(Array(3.5, 6.264982043070834)),
       Vectors.dense(Array(3.640054944640259, 6.020797289396148)),

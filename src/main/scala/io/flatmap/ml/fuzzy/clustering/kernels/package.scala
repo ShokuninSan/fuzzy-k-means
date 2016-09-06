@@ -42,7 +42,7 @@ package object kernels {
 
   }
 
-  implicit object SparkKMeansKernel extends KMeansKernel[RowMatrix, DenseMatrix[Double], Normalizer[RowMatrix]] {
+  implicit object SparkKMeansKernel extends KMeansKernel[RowMatrix, org.apache.spark.mllib.linalg.DenseMatrix, Normalizer[RowMatrix]] {
 
     /**
       * Calculate cluster centroids
@@ -54,13 +54,14 @@ package object kernels {
       * @param memberships Matrix of membership degrees of data points to clusters of shape (#datapoints x #centroids)
       * @return Matrix of shape #clusters x #features
       */
-    def calculateCentroids(data: RowMatrix, memberships: RowMatrix, fuzziness: Double): DenseMatrix[Double] = {
+    def calculateCentroids(data: RowMatrix, memberships: RowMatrix, fuzziness: Double): org.apache.spark.mllib.linalg.DenseMatrix = {
       val f = (v: Vector) => DenseVector.apply(v.toArray)
       val _m = pow(memberships, fuzziness).rows.map(f).cache()
       val _d = data.rows.map(f)
       val dotProduct = dot(_m, _d)
       val margin = _m.reduce(_ :+ _)
-      dotProduct(::, *).map(_ :/ margin)
+      val centroids = dotProduct(::, *).map(_ :/ margin)
+      new org.apache.spark.mllib.linalg.DenseMatrix(centroids.rows, centroids.cols, centroids.data)
     }
 
     def calculateMemberships(distances: RowMatrix, fuzziness: Double)(implicit normalizer: Normalizer[RowMatrix]): RowMatrix = {

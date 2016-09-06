@@ -6,7 +6,7 @@ import org.scalatest.{FlatSpec, Matchers}
 
 class IterativeOptimizationSpec extends FlatSpec with Matchers {
 
-  object TestKernel extends IterativeOptimization {
+  object TestKernel extends BreezeIterativeOptimization {
     val numClusters = 2
     val fuzziness = 2.5
     val epsilon = eps
