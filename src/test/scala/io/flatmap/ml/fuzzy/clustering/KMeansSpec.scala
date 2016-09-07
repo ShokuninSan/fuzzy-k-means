@@ -65,7 +65,7 @@ class KMeansSpec extends FlatSpec with Matchers with BeforeAndAfterEach with Tes
     val model = SparkKMeans(numClusters=1, fuzziness=2).fit(data)
     val expectedMemberships = new RowMatrix(sc.makeRDD(Seq(Vectors.dense(Array(1.0, 1.0, 1.0, 1.0)))), 1L, 4)
     val expectedCentroids = new org.apache.spark.mllib.linalg.DenseMatrix(1, 2, Array(2.0, 2.0))
-    assert(model.u == expectedMemberships)
+    assert(model.u.rows.collect().toList == expectedMemberships.rows.collect().toList)
     assert(model.centroids == expectedCentroids)
   }
 

@@ -22,7 +22,7 @@ trait SparkIterativeOptimization {
 
   def run(data: RowMatrix, clusterCentroids: Option[org.apache.spark.mllib.linalg.DenseMatrix] = None, errorThreshold: Double =  0.005, maxIterations: Int = 2000, fuzziness: Double = 2.0)(implicit kernel: KMeansKernel[RowMatrix, org.apache.spark.mllib.linalg.DenseMatrix, Normalizer[RowMatrix]], sc: SparkContext): (org.apache.spark.mllib.linalg.DenseMatrix, RowMatrix) = {
     // step 1: initialization
-    var memberships = initMembershipRowMatrix(numClusters, data.numRows().toInt)
+    var memberships = initMembershipRowMatrix(data.numRows().toInt, numClusters)
     var centroids = org.apache.spark.mllib.linalg.DenseMatrix.zeros(numClusters, data.numCols().toInt)
     var iteration = 0
 

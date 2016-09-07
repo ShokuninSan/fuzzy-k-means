@@ -64,6 +64,15 @@ package object kernels {
       new org.apache.spark.mllib.linalg.DenseMatrix(centroids.rows, centroids.cols, centroids.data)
     }
 
+    /**
+      * Calculate cluster membership of data points
+      *
+      * This is a scalable implementation according to Timothy Ross book "Fuzzy Logic with Engineering Applications", p. 353,
+      * equation (10.32a)
+      *
+      * @param distances RowMatrix of distances between centroids and data points of shape (#datapoints x #centroids)
+      * @return RowMatrix of calculated membership degrees of shape (#datapoints x #clusters)
+      */
     def calculateMemberships(distances: RowMatrix, fuzziness: Double)(implicit normalizer: Normalizer[RowMatrix]): RowMatrix = {
       val _u = pow(pow(distances, 2 / (fuzziness - 1)), -1)
       normalizer.normalize(_u)
